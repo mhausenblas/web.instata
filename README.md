@@ -13,6 +13,13 @@ Turn your plain old tabular data (POTD) into Web data with web.instata: it takes
 	|       |              |                    |            +--------------+
 	+-------+              +--------------------+
 
+Usage:
+
+	python web.instata.py -p {path to CSV file} {base URI for publishing}
+
+Example:
+
+	python web.instata.py -p test/potd_0.csv http://example.org/instata/potd_0
 
 
 ## Kudos
