@@ -27,7 +27,7 @@ rdflib.plugin.register('sparql', rdflib.query.Result, 'sparql.query', 'SPARQLQue
 
 class InstantWebDataPublisher(object):
 	
-	DEBUG = True
+	DEBUG = False
 	
 	# some config stuff we gonna need:
 	TEMPLATES_DIR = 'templates/'

@@ -30,7 +30,15 @@ Example:
 ... and you should see the following on the command line:
 
 	[web.instata] processing [test/potd_0.csv] with base URI [http://example.org/instata/potd_0] 
+	[web.instata] loading DBpedia2Schema.org mapping ...
+	[web.instata] got DBpedia2Schema.org mapping!
+	[web.instata] trying to find a match for http://schema.org/Recipe
+	[web.instata] trying to find a match for http://schema.org/publishDate
+	[web.instata] trying to find a match for http://schema.org/name
+	[web.instata] trying to find a match for http://schema.org/author
+	[web.instata] match(es) found: {'http://schema.org/author': ('http://www.w3.org/2002/07/owl#equivalentProperty', 'http://dbpedia.org/ontology/author')}
 	[web.instata] result is now available at [output/potd_0.html]
+
 	
 As a result of the above command, an HTML+microdata document [potd_0.html](https://raw.github.com/mhausenblas/web.instata/master/doc/example_output_html.txt) is created that should look like the following:
 
@@ -39,23 +47,23 @@ As a result of the above command, an HTML+microdata document [potd_0.html](https
 The generated HTML document, [potd_0.html](https://raw.github.com/mhausenblas/web.instata/master/doc/example_output_html.txt), contains Schema.org terms marked up in [microdata](http://www.w3.org/TR/microdata/) as follows:
 
 	<table id="instatable">
-	<thead>
-		<tr itemscope itemtype="http://purl.org/NET/schema-org-csv#HeaderRow">
-			<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:1">Recipe</th>
-			<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:2">name</th>
+		<thead>
+			<tr itemscope itemtype="http://purl.org/NET/schema-org-csv#HeaderRow">
+				<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:1">Recipe</th>
+				<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:2">name</th>
+				...
+			</tr>
+		</thead>
+		<tbody>
+			<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:2">
+				<td><a href="http://example.org/instata/potd_0#row:2" itemprop="http://schema.org/url">bb</a></td>
+				<td itemprop="http://schema.org/name">Mom's World Famous Banana Bread</td>
+				<td itemprop="http://schema.org/author">John Smith</td>
+				<td itemprop="http://schema.org/publishDate">May 8, 2009</td>
+			</tr>
 			...
-		</tr>
-	</thead>
-	<tbody>
-		<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:2">
-			<td><a href="http://example.org/instata/potd_0#row:2,col:1" itemprop="http://schema.org/url">bb</a></td>
-			<td itemprop="http://schema.org/name">Mom's World Famous Banana Bread</td>
-			<td itemprop="http://schema.org/author">John Smith</td>
-			<td itemprop="http://schema.org/publishDate">May 8, 2009</td>
-		</tr>
-		...
-	</tbody>
-	</table>
+		</tbody>
+	</table>	
 
 ### Data dump
 
