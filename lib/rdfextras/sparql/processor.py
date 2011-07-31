@@ -1,8 +1,8 @@
-from rdfextras import sparql
-import rdfextras.sparql.parser
-from rdfextras.sparql.algebra import TopEvaluate
+import sparql
+import sparql.parser
+from sparql.algebra import TopEvaluate
 from rdflib.namespace import RDFS, RDF, OWL
-from rdfextras.sparql.components import Query, Prolog
+from sparql.components import Query, Prolog
 
 class Processor(sparql.Processor):
 
