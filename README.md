@@ -32,11 +32,11 @@ Example:
 	[web.instata] processing [test/potd_0.csv] with base URI [http://example.org/instata/potd_0] 
 	[web.instata] result is now available at [output/potd_0.html]
 	
-As a result of the above command, an HTML+microdata document [potd_0.html](doc/example_output_html.txt) is created that should look like the following:
+As a result of the above command, an HTML+microdata document [potd_0.html](https://raw.github.com/mhausenblas/web.instata/master/doc/example_output_html.txt) is created that should look like the following:
 
-![example output screenshot](doc/example_output_screenshot.png "Example web.instata output for the input file test/potd_0.csv")
+![example output screenshot](https://github.com/mhausenblas/web.instata/raw/master/doc/example_output_screenshot.png "Example web.instata output for the input file test/potd_0.csv")
 
-The generated HTML document, [potd_0.html](doc/example_output_html.txt), contains Schema.org terms marked up in [microdata](http://www.w3.org/TR/microdata/) as follows:
+The generated HTML document, [potd_0.html](https://raw.github.com/mhausenblas/web.instata/master/doc/example_output_html.txt), contains Schema.org terms marked up in [microdata](http://www.w3.org/TR/microdata/) as follows:
 
 	<table id="instatable">
 	<thead>
