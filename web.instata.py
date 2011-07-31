@@ -8,9 +8,9 @@
 
 import os
 import sys
-sys.path.insert(0, os.getcwd() + '/lib')
 sys.path.insert(0, os.getcwd() + '/lib/rdflib')
 sys.path.insert(0, os.getcwd() + '/lib/rdfextras')
+sys.path.insert(0, os.getcwd() + '/lib')
 import getopt
 import StringIO
 import shutil
@@ -22,7 +22,7 @@ from rdflib.plugin import PluginException
 import rdflib_schemaorg_csv
 from bottle import SimpleTemplate
 
-rdflib.plugin.register('sparql', rdflib.query.Processor, 'rdfextras.sparql.processor', 'Processor')
+rdflib.plugin.register('sparql', rdflib.query.Processor, 'sparql.processor', 'Processor')
 rdflib.plugin.register('sparql', rdflib.query.Result, 'sparql.query', 'SPARQLQueryResult')
 
 class InstantWebDataPublisher(object):
@@ -31,7 +31,10 @@ class InstantWebDataPublisher(object):
 	
 	# some config stuff we gonna need:
 	TEMPLATES_DIR = 'templates/'
+	MAPPINGS_DIR = 'mappings/'
 	OUTPUT_DIR = 'output/'
+	
+	DBPEDIA2SCHEMA = 'dbpedia-2011-07-31.rdf'
 	BASE_TEMPLATE = TEMPLATES_DIR + 'base.tpl'
 	BASE_STYLE_FILE = 'web.instata-style.css'
 	JQUERY_UI_CSS = 'jquery-ui-1.8.4.custom.css'
@@ -43,7 +46,9 @@ class InstantWebDataPublisher(object):
 	# internal stuff
 	NAMESPACES = {	'schema' : Namespace('http://schema.org/'), 
 					'scsv' : Namespace('http://purl.org/NET/schema-org-csv#'), 
-					'dc' : Namespace('http://purl.org/dc/terms/') 
+					'dc' : Namespace('http://purl.org/dc/terms/'),
+					'owl' : Namespace('http://www.w3.org/2002/07/owl#'),
+					'rdfs' : Namespace('http://www.w3.org/2000/01/rdf-schema#')
 	}
 	
 	# content creation queries:
@@ -63,6 +68,11 @@ class InstantWebDataPublisher(object):
 					?cell a ?cellType ;
 						  rdf:value ?val .
 	}"""
+	
+	MATCHED_TERMS_QUERY = """SELECT ?match ?prop WHERE { 
+					{ ?match ?prop <%s> . }
+	}"""
+	
 
 	
 	def __init__(self):
@@ -98,7 +108,6 @@ class InstantWebDataPublisher(object):
 			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
 			self.table_rows.append((r[0], r[1], r[2], r[3]))
 		
-		# variables starting with ds_ refer to data space stuff, otherwise starting with wi_ signalling internal stuff:
 		return tpl.render(ds_name=self.doc_url.split('/')[-1].split('.')[0],
 						theader=sorted(self.table_header, key=lambda cell: cell[0]), 
 						trows=sorted(self.table_rows, key=lambda cell: cell[1]), 
@@ -108,6 +117,7 @@ class InstantWebDataPublisher(object):
 		# get the data and render it
 		self.parse(doc_url, base_uri)
 		render_result = self.render()
+		self.load_mappings()
 		
 		# output the result
 		result_file_name = InstantWebDataPublisher.OUTPUT_DIR + doc_url.split('/')[-1].split('.')[0] + ".html"
@@ -124,6 +134,21 @@ class InstantWebDataPublisher(object):
 		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.JQUERY_DTABLE, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.JQUERY_DTABLE)
 	
 		return result_file_name
+	
+	
+	def load_mappings(self):
+		print('[web.instata] loading DBpedia2Schema.org mapping ...')
+		self.dbpedia2schema = ConjunctiveGraph("IOMemory")
+		self.dbpedia2schema.parse(location=InstantWebDataPublisher.MAPPINGS_DIR + InstantWebDataPublisher.DBPEDIA2SCHEMA)
+		print('[web.instata] got DBpedia2Schema.org mapping!')
+		
+		# going through the cell types from the parse and render steps to find matching terms in DBpedia:
+		for record in self.table_rows[0:4]: # only looking at one sample row for the types
+			q = (InstantWebDataPublisher.MATCHED_TERMS_QUERY %(str(record[2])))
+			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  trying to match %s with:\n%s' %(str(record[2]), q))
+			res = self.dbpedia2schema.query(q, initNs=InstantWebDataPublisher.NAMESPACES)
+			for r in res:
+				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
 	
 	def dump_data(self, format='turtle'):
 		if self.g:
