@@ -36,22 +36,21 @@ h3 {
 }
 
 #header {
-	
+	text-shadow: 2px 2px 4px #333;
 }
 
 #main {
 	
 }
 
-.header {
-	font-weight: bold;
-	font-size: 120%;
+#instatable {
+	width: 90%;
+	margin: 1em 2em 1em 2em;
 }
 
-.row {
+#instatable th {
+	cursor: pointer;
 }
-
-
 
 #footer {
 	text-align: center;

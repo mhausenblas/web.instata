@@ -34,6 +34,11 @@ class InstantWebDataPublisher(object):
 	OUTPUT_DIR = 'output/'
 	BASE_TEMPLATE = TEMPLATES_DIR + 'base.tpl'
 	BASE_STYLE_FILE = 'web.instata-style.css'
+	JQUERY_UI_CSS = 'jquery-ui-1.8.4.custom.css'
+	DTABLE_CSS = 'd_table.css'
+	DTABLE_JUI_CSS = 'd_table_jui.css'
+	JQUERY = 'jquery.js'
+	JQUERY_DTABLE = 'jquery.dataTables.min.js'
 	
 	# internal stuff
 	NAMESPACES = {	'schema' : Namespace('http://schema.org/'), 
@@ -42,15 +47,23 @@ class InstantWebDataPublisher(object):
 	}
 	
 	# content creation queries:
-	BASE_QUERY = """SELECT ?row ?rowType ?cell ?colTitle ?cellType ?val WHERE { 
+	HEADER_QUERY = """SELECT ?cell ?colTitle WHERE { 
 					?table a scsv:Table ;
 						   scsv:row ?row .
-					?row a ?rowType ; 
-						scsv:cell ?cell .
-					OPTIONAL {	?cell a ?cellType ;
-					 				rdf:value ?val . }
-					OPTIONAL {	?cell dc:title ?colTitle . }
+					?row a scsv:HeaderRow ; 
+						 scsv:cell ?cell .
+					?cell dc:title ?colTitle .
 	}"""
+	
+	ROWS_QUERY = """SELECT ?row ?cell ?cellType ?val WHERE { 
+					?table a scsv:Table ;
+						   scsv:row ?row .
+					?row a scsv:Row ; 
+						scsv:cell ?cell .
+					?cell a ?cellType ;
+						  rdf:value ?val .
+	}"""
+
 	
 	def __init__(self):
 		self.g = None
@@ -68,38 +81,27 @@ class InstantWebDataPublisher(object):
 	def render(self):
 		tpl = SimpleTemplate(name=InstantWebDataPublisher.BASE_TEMPLATE)
 		wi_last_update = datetime.datetime.utcnow().replace(microsecond = 0)
+
 		if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG] querying input data ...')
-		res = self.g.query(InstantWebDataPublisher.BASE_QUERY, initNs=InstantWebDataPublisher.NAMESPACES)
-		if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG] got %s rows' %(len(res)))
-		
+
+		res = self.g.query(InstantWebDataPublisher.HEADER_QUERY, initNs=InstantWebDataPublisher.NAMESPACES)
 		self.table_header = []
-		self.table_rows = []
-		# ?row ?rowType ?cell ?colTitle ?cellType ?val
+		# ?cell ?colTitle
 		for r in res:
 			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
-			if str(r[1]) == 'http://purl.org/NET/schema-org-csv#HeaderRow':
-				# 0: rdflib.term.URIRef('http://example.org/instata/potd_0#row:1')
-				# 1: rdflib.term.URIRef('http://purl.org/NET/schema-org-csv#HeaderRow')
-				# 2: rdflib.term.URIRef('http://example.org/instata/potd_0#row:1,col:2')
-				# 3: rdflib.term.Literal(u'name')
-				# 4: None
-				# 5: None
-				self.table_header.append(r[3]) # ?colTitle
-				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  header cell: %s' %(r[3]))
-			else:
-				# 0: rdflib.term.URIRef('http://example.org/instata/potd_0#row:2')
-				# 1: rdflib.term.URIRef('http://purl.org/NET/schema-org-csv#Row')
-				# 2: rdflib.term.URIRef('http://example.org/instata/potd_0#row:2,col:2')
-				# 3: None
-				# 4: rdflib.term.URIRef('http://schema.org/name')
-				# 5: rdflib.term.Literal(u"Mom's World Famous Banana Bread")
-				self.table_rows.append(r[5]) # ?val
-				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  cell: %s' %(r[5]))
-			
+			self.table_header.append((r[0], r[1]))
+
+		self.table_rows = []
+		res = self.g.query(InstantWebDataPublisher.ROWS_QUERY, initNs=InstantWebDataPublisher.NAMESPACES)		
+		# ?row ?cell ?cellType ?val
+		for r in res:
+			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
+			self.table_rows.append((r[0], r[1], r[2], r[3]))
+		
 		# variables starting with ds_ refer to data space stuff, otherwise starting with wi_ signalling internal stuff:
 		return tpl.render(ds_name=self.doc_url.split('/')[-1].split('.')[0],
-						theader=self.table_header, 
-						trows=self.table_rows, 
+						theader=sorted(self.table_header, key=lambda cell: cell[0]), 
+						trows=sorted(self.table_rows, key=lambda cell: cell[1]), 
 						wi_last_update=str(wi_last_update) + ' (UTC)')
 
 	def instata(self, doc_url, base_uri):
@@ -107,12 +109,20 @@ class InstantWebDataPublisher(object):
 		self.parse(doc_url, base_uri)
 		render_result = self.render()
 		
-		# output the result and copy style file
+		# output the result
 		result_file_name = InstantWebDataPublisher.OUTPUT_DIR + doc_url.split('/')[-1].split('.')[0] + ".html"
 		result_file = open(result_file_name, 'w')
 		result_file.write(render_result)
 		result_file.close()
+		
+		# copy style files (CSS and JS)
 		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.BASE_STYLE_FILE, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.BASE_STYLE_FILE)
+		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.JQUERY_UI_CSS, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.JQUERY_UI_CSS)
+		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.DTABLE_CSS, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.DTABLE_CSS)
+		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.DTABLE_JUI_CSS, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.DTABLE_JUI_CSS)
+		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.JQUERY, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.JQUERY)
+		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.JQUERY_DTABLE, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.JQUERY_DTABLE)
+	
 		return result_file_name
 	
 	def dump_data(self, format='turtle'):
