@@ -31,7 +31,31 @@ Example:
 
 	[web.instata] processing [test/potd_0.csv] with base URI [http://example.org/instata/potd_0] 
 	[web.instata] result is now available at [output/potd_0.html]
+	
+As a result of the above command, an HTML+microdata document [potd_0.html](doc/example_output_html.txt) is created that should look like the following:
 
+![example output screenshot](doc/example_output_screenshot.png "Example web.instata output for the input file test/potd_0.csv")
+
+The generated HTML document, [potd_0.html](doc/example_output_html.txt), contains Schema.org terms marked up in [microdata](http://www.w3.org/TR/microdata/) as follows:
+
+	<table id="instatable">
+	<thead>
+		<tr itemscope itemtype="http://purl.org/NET/schema-org-csv#HeaderRow">
+			<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:1">Recipe</th>
+			<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:2">name</th>
+			...
+		</tr>
+	</thead>
+	<tbody>
+		<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:2">
+			<td><a href="http://example.org/instata/potd_0#row:2,col:1" itemprop="http://schema.org/url">bb</a></td>
+			<td itemprop="http://schema.org/name">Mom's World Famous Banana Bread</td>
+			<td itemprop="http://schema.org/author">John Smith</td>
+			<td itemprop="http://schema.org/publishDate">May 8, 2009</td>
+		</tr>
+		...
+	</tbody>
+	</table>
 
 ### Data dump
 

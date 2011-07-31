@@ -14,21 +14,25 @@
 	</div>
 	
 	<div id="main">
-		<table cellpadding="0" cellspacing="0" border="0" id="instatable">
+		<table id="instatable">
 			<thead>
-				<tr>
+				<tr itemscope itemtype="http://purl.org/NET/schema-org-csv#HeaderRow">
+					<!-- ?cell ?colTitle -->
 					%for h in theader:
-						<th>{{str(h[1])}}</th>
+						<th itemscope itemtype="http://schema.org/Thing" itemid="{{str(h[0])}}">{{str(h[1])}}</th>
 					%end
 				</tr>
 			</thead>
 			<tbody>
-				%record=0
+				%record = 0
+				<!-- ?row ?cell ?cellType ?val -->
 				%for r in trows:
 					%if record == 0:
-					<tr>
+					<tr itemscope itemtype="{{str(r[2])}}" itemid="{{str(r[0])}}">
+						<td><a href="{{str(r[1])}}" itemprop="http://schema.org/url">{{str(r[3])}}</a></td>
+					%else:
+						<td itemprop="{{str(r[2])}}">{{str(r[3])}}</td>
 					%end
-						<td>{{str(r[3])}}</td>
 					%if record == 3:
 					</tr>
 					%record = 0

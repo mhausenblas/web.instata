@@ -1,0 +1,36 @@
+<table id="instatable">
+<thead>
+	<tr itemscope itemtype="http://purl.org/NET/schema-org-csv#HeaderRow">
+		<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:1">Recipe</th>
+		<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:2">name</th>
+		<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:3">author</th>
+		<th itemscope itemtype="http://schema.org/Thing" itemid="http://example.org/instata/potd_0#row:1,col:4">publishDate</th>
+	</tr>
+</thead>
+<tbody>
+	<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:2">
+		<td><a href="http://example.org/instata/potd_0#row:2,col:1" itemprop="http://schema.org/url">bb</a></td>
+		<td itemprop="http://schema.org/name">Mom's World Famous Banana Bread</td>
+		<td itemprop="http://schema.org/author">John Smith</td>
+		<td itemprop="http://schema.org/publishDate">May 8, 2009</td>
+	</tr>
+	<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:3">
+		<td><a href="http://example.org/instata/potd_0#row:3,col:1" itemprop="http://schema.org/url">mf</a></td>
+		<td itemprop="http://schema.org/name">Michael's favourite salad</td>
+		<td itemprop="http://schema.org/author">Michael Hausenblas</td>
+		<td itemprop="http://schema.org/publishDate">July 31, 2011</td>
+	</tr>
+	<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:4">
+		<td><a href="http://example.org/instata/potd_0#row:4,col:1" itemprop="http://schema.org/url">t1</a></td>
+		<td itemprop="http://schema.org/name">Test 1</td>
+		<td itemprop="http://schema.org/author">Michael Hausenblas</td>
+		<td itemprop="http://schema.org/publishDate">July 31, 2011</td>
+	</tr>
+	<tr itemscope itemtype="http://schema.org/Recipe" itemid="http://example.org/instata/potd_0#row:5">
+		<td><a href="http://example.org/instata/potd_0#row:5,col:1" itemprop="http://schema.org/url">t2</a></td>
+		<td itemprop="http://schema.org/name">Test 2</td>
+		<td itemprop="http://schema.org/author">Michael Hausenblas</td>
+		<td itemprop="http://schema.org/publishDate">July 31, 2011</td>
+	</tr>
+</tbody>
+</table>
