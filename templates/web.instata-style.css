@@ -52,6 +52,11 @@ h3 {
 	cursor: pointer;
 }
 
+#related {
+	font-size: 80%;
+	color: #d0d0d0;
+}
+
 #footer {
 	text-align: center;
 	margin: 0 auto;

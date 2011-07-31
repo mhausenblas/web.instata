@@ -98,12 +98,33 @@ class InstantWebDataPublisher(object):
 			self.table_header.append((r[0], r[1]))
 
 		self.table_rows = []
+		self.terms = []
 		res = self.g.query(InstantWebDataPublisher.ROWS_QUERY, initNs=InstantWebDataPublisher.NAMESPACES)		
 		# ?row ?cell ?cellType ?val
 		for r in res:
 			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
 			self.table_rows.append((r[0], r[1], r[2], r[3]))
-	
+			if r[2] not in self.terms:
+				self.terms.append(r[2])
+		
+	def load_mappings(self):
+		print('[web.instata] loading DBpedia2Schema.org mapping ...')
+		self.dbpedia2schema = ConjunctiveGraph("IOMemory")
+		self.dbpedia2schema.parse(location=InstantWebDataPublisher.MAPPINGS_DIR + InstantWebDataPublisher.DBPEDIA2SCHEMA)
+		print('[web.instata] got DBpedia2Schema.org mapping!')
+
+		# going through the cell types from the parse and render steps to find matching terms in DBpedia:
+		self.matches = {}
+		for t in self.terms:
+			q = (InstantWebDataPublisher.MATCHED_TERMS_QUERY %(str(t)))
+			print('[web.instata] trying to find a match for %s' %(str(t)))
+			res = self.dbpedia2schema.query(q, initNs=InstantWebDataPublisher.NAMESPACES)
+			# ?match ?prop
+			for r in res:
+				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
+				self.matches[str(t)] = (str(r[1]), str(r[0]))
+		print('[web.instata] match(es) found: %s' %(self.matches))
+
 	def render(self):
 		tpl = SimpleTemplate(name=InstantWebDataPublisher.BASE_TEMPLATE)
 		wi_last_update = datetime.datetime.utcnow().replace(microsecond = 0)
@@ -134,25 +155,6 @@ class InstantWebDataPublisher(object):
 		shutil.copy2(InstantWebDataPublisher.TEMPLATES_DIR + InstantWebDataPublisher.JQUERY_DTABLE, InstantWebDataPublisher.OUTPUT_DIR + InstantWebDataPublisher.JQUERY_DTABLE)
 	
 		return result_file_name
-	
-	
-	def load_mappings(self):
-		print('[web.instata] loading DBpedia2Schema.org mapping ...')
-		self.dbpedia2schema = ConjunctiveGraph("IOMemory")
-		self.dbpedia2schema.parse(location=InstantWebDataPublisher.MAPPINGS_DIR + InstantWebDataPublisher.DBPEDIA2SCHEMA)
-		print('[web.instata] got DBpedia2Schema.org mapping!')
-		
-		# going through the cell types from the parse and render steps to find matching terms in DBpedia:
-		self.matches = {}
-		for record in self.table_rows[0:4]: # only looking at one sample row for the types
-			q = (InstantWebDataPublisher.MATCHED_TERMS_QUERY %(str(record[2])))
-			print('[web.instata] trying to find a match for %s' %(str(record[2])))
-			res = self.dbpedia2schema.query(q, initNs=InstantWebDataPublisher.NAMESPACES)
-			# ?match ?prop
-			for r in res:
-				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
-				self.matches[str(record[2])] = (str(r[1]), str(r[0]))
-		print('[web.instata] match(es) found: %s' %(self.matches))
 
 	def dump_data(self, format='turtle'):
 		if self.g:

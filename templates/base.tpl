@@ -24,33 +24,29 @@
 				</tr>
 			</thead>
 			<tbody>
-				%record = 0
 				<!-- ?row ?cell ?cellType ?val -->
-				%for r in trows:
-					%if record == 0:
-						%if str(r[2]) in aliases:
-							<tr itemscope itemtype="{{str(r[2])}} {{aliases[str(r[2])][1]}}" itemid="{{str(r[0])}}">
-								<td><a href="{{str(r[1])}}" itemprop="http://schema.org/url">{{str(r[3])}}</a></td>
-						%else:
-						<tr itemscope itemtype="{{str(r[2])}}" itemid="{{str(r[0])}}">
-							<td><a href="{{str(r[1])}}" itemprop="http://schema.org/url">{{str(r[3])}}</a></td>
-						%end
+				%for rec in trows:
+					%if 'col:1' in rec[1]:
+						<tr itemscope itemtype="{{rec[2]}}" itemid="{{rec[0]}}">
+						<td><a href="{{rec[0]}}" itemprop="http://schema.org/url">{{rec[3]}}</a></td>
 					%else:
-						%if str(r[2]) in aliases:
-							<td itemprop="{{str(r[2])}} {{aliases[str(r[2])][1]}}">{{str(r[3])}}</td>
-						%else:
-							<td itemprop="{{str(r[2])}}">{{str(r[3])}}</td>
-						%end
+						<td itemprop="{{rec[2]}}">{{rec[3]}}</td>
 					%end
-					%if record == 3:
-					</tr>
-					%record = 0
-					%else:
-					%record = record + 1
+					%if int(rec[1].split('#')[1].split(',')[1].split(':')[1]) == len(theader):
+						</tr>
 					%end
 				%end
 			</tbody>
 		</table>
+		
+		<div id="related">
+			Related terms from other vocabularies:
+			<ul>
+			%for schemaTerm, match in aliases.items():
+				<li>DBpedia: <a href="{{match[1]}}">{{schemaTerm.split('/')[-1]}}</li>
+			%end
+			</ul>
+		</div>
 	</div>
 
 	<div id="footer">
