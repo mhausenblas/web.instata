@@ -10,7 +10,14 @@
 		<h1>{{ds_name}}</h1>
 	</div>
 	
-	<div id="main"></div>
+	<div id="main">
+		%for h in theader:
+			<div class="header">{{h}}</div>
+		%end
+		%for r in trows:
+			<div class="row">{{r}}</div>
+		%end
+	</div>
 
 	<div id="footer">
 		Last update on: {{wi_last_update}} | Created with <a href="https://github.com/mhausenblas/web.instata">web.instata</a> 

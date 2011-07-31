@@ -43,6 +43,16 @@ h3 {
 	
 }
 
+.header {
+	font-weight: bold;
+	font-size: 120%;
+}
+
+.row {
+}
+
+
+
 #footer {
 	text-align: center;
 	margin: 0 auto;
