@@ -26,6 +26,13 @@ Example:
 
 Thanks to http://www.asciiflow.com for providing a useful tool.
 
+## To do
+
+* Use the [JS dump](http://schema.rdfs.org/all.json) from Schema.RDF.org to check if term exists
+* Use [DBpedia2Schema.org](http://mappings.dbpedia.org/server/ontology/export) mapping to enrich output (related link, etc.)
+* Use [Bottle](http://bottlepy.org/docs/dev/) as templating system for output
+* Provide new option `-c` to check input data
+* Provide new option `-d` to create data dump in RDF
 
 ## License
 
