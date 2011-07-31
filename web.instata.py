@@ -70,7 +70,7 @@ class InstantWebDataPublisher(object):
 	}"""
 	
 	MATCHED_TERMS_QUERY = """SELECT ?match ?prop WHERE { 
-					{ ?match ?prop <%s> . }
+					 ?match ?prop <%s> .
 	}"""
 	
 
@@ -87,13 +87,9 @@ class InstantWebDataPublisher(object):
 		self.base_uri = base_uri
 		self.g = ConjunctiveGraph("IOMemory")
 		self.g.parse(location=doc_url, format="schemaorg_csv", csv_file_URI=base_uri)
-	
-	def render(self):
-		tpl = SimpleTemplate(name=InstantWebDataPublisher.BASE_TEMPLATE)
-		wi_last_update = datetime.datetime.utcnow().replace(microsecond = 0)
-
+		
+		# construct the table header and body out of the input data
 		if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG] querying input data ...')
-
 		res = self.g.query(InstantWebDataPublisher.HEADER_QUERY, initNs=InstantWebDataPublisher.NAMESPACES)
 		self.table_header = []
 		# ?cell ?colTitle
@@ -107,17 +103,21 @@ class InstantWebDataPublisher(object):
 		for r in res:
 			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
 			self.table_rows.append((r[0], r[1], r[2], r[3]))
-		
+	
+	def render(self):
+		tpl = SimpleTemplate(name=InstantWebDataPublisher.BASE_TEMPLATE)
+		wi_last_update = datetime.datetime.utcnow().replace(microsecond = 0)
 		return tpl.render(ds_name=self.doc_url.split('/')[-1].split('.')[0],
 						theader=sorted(self.table_header, key=lambda cell: cell[0]), 
-						trows=sorted(self.table_rows, key=lambda cell: cell[1]), 
+						trows=sorted(self.table_rows, key=lambda cell: cell[1]),
+						aliases=self.matches, 
 						wi_last_update=str(wi_last_update) + ' (UTC)')
 
 	def instata(self, doc_url, base_uri):
 		# get the data and render it
 		self.parse(doc_url, base_uri)
+		self.load_mappings() # try to find matches for Schema.org terms in the mapping files
 		render_result = self.render()
-		self.load_mappings()
 		
 		# output the result
 		result_file_name = InstantWebDataPublisher.OUTPUT_DIR + doc_url.split('/')[-1].split('.')[0] + ".html"
@@ -143,13 +143,17 @@ class InstantWebDataPublisher(object):
 		print('[web.instata] got DBpedia2Schema.org mapping!')
 		
 		# going through the cell types from the parse and render steps to find matching terms in DBpedia:
+		self.matches = {}
 		for record in self.table_rows[0:4]: # only looking at one sample row for the types
 			q = (InstantWebDataPublisher.MATCHED_TERMS_QUERY %(str(record[2])))
-			if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  trying to match %s with:\n%s' %(str(record[2]), q))
+			print('[web.instata] trying to find a match for %s' %(str(record[2])))
 			res = self.dbpedia2schema.query(q, initNs=InstantWebDataPublisher.NAMESPACES)
+			# ?match ?prop
 			for r in res:
 				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG]  row: %s' %(r))
-	
+				self.matches[str(record[2])] = (str(r[1]), str(r[0]))
+		print('[web.instata] match(es) found: %s' %(self.matches))
+
 	def dump_data(self, format='turtle'):
 		if self.g:
 			self.g.bind('schema', InstantWebDataPublisher.NAMESPACES['schema'], True)

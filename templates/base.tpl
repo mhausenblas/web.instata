@@ -28,10 +28,19 @@
 				<!-- ?row ?cell ?cellType ?val -->
 				%for r in trows:
 					%if record == 0:
-					<tr itemscope itemtype="{{str(r[2])}}" itemid="{{str(r[0])}}">
-						<td><a href="{{str(r[1])}}" itemprop="http://schema.org/url">{{str(r[3])}}</a></td>
+						%if str(r[2]) in aliases:
+							<tr itemscope itemtype="{{str(r[2])}} {{aliases[str(r[2])][1]}}" itemid="{{str(r[0])}}">
+								<td><a href="{{str(r[1])}}" itemprop="http://schema.org/url">{{str(r[3])}}</a></td>
+						%else:
+						<tr itemscope itemtype="{{str(r[2])}}" itemid="{{str(r[0])}}">
+							<td><a href="{{str(r[1])}}" itemprop="http://schema.org/url">{{str(r[3])}}</a></td>
+						%end
 					%else:
-						<td itemprop="{{str(r[2])}}">{{str(r[3])}}</td>
+						%if str(r[2]) in aliases:
+							<td itemprop="{{str(r[2])}} {{aliases[str(r[2])][1]}}">{{str(r[3])}}</td>
+						%else:
+							<td itemprop="{{str(r[2])}}">{{str(r[3])}}</td>
+						%end
 					%end
 					%if record == 3:
 					</tr>
