@@ -257,16 +257,16 @@ if __name__ == "__main__":
 				print("[web.instata] result is now available at [%s]" %(r))
 			elif opt in ("-d", "--dump"):
 				(doc_url, base_uri) = (args[0], args[1])
-				print("processing [%s] with base URI [%s] " %(doc_url, base_uri))
+				print("[web.instata] processing [%s] with base URI [%s] " %(doc_url, base_uri))
 				iwdp.parse(doc_url, base_uri)
 				print(iwdp.dump_data())
 			elif opt in ("-v", "--validate"):
 				(doc_url, base_uri) = (args[0], args[1])
-				print("validating schema ...")
+				print("[web.instata] validating schema ...")
 				(summary, detailed_results) = iwdp.validate(doc_url, base_uri)
-				if summary: print("All column headings in the input file %s seem to be valid Schema.org terms :)" %doc_url)
+				if summary: print("[web.instata] all column headings in the input file %s seem to be valid Schema.org terms :)" %doc_url)
 				else:
-					print("During the validation at least one column heading in input file %s seems not to be a valid Schema.org term :(" %doc_url)
+					print("[web.instata] during the validation at least one column heading in input file %s seems not to be a valid Schema.org term :(" %doc_url)
 					print(detailed_results)
 	except getopt.GetoptError, err:
 		print str(err)

@@ -104,6 +104,22 @@ Example:
 	
 Note that in the configuration file you can specify one or more schema matchings (via `c:schema_matching`) as well as customise the output (`c:base_template` as well as `c:base_style_file`). The last block (metadata) is for completeness purposes and currently not used by web.instata - you may remove it if you want.
 
+### Validation of input
+
+In order to check if the input CSV file uses Schema.org terms:
+
+	python web.instata.py -v {path to CSV file} {base URI for publishing}
+
+Example:
+
+	python web.instata.py -v test/potd_0.csv http://example.org/instata/potd_0
+	
+... and you should see the following on the command line:
+
+	[web.instata] validating schema ...
+	[web.instata] all column headings in the input file test/potd_0.csv seem to be valid Schema.org terms :)
+
+
 ### Data dump
 
 In order to get a RDF/Turtle data dump from a CSV file:
