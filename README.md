@@ -17,7 +17,7 @@ Turn your plain old tabular data (POTD) into Web data with web.instata: it takes
 
 ## Usage
 
-### Publishing
+### Simple publishing
 
 In order to publish a HTML+microdata document from a CSV file:
 
@@ -64,6 +64,45 @@ The generated HTML document, [potd_0.html](https://raw.github.com/mhausenblas/we
 			...
 		</tbody>
 	</table>	
+
+### Configuration-based publishing
+
+A more flexible but also slightly more complex case is that of using a web.instata configuration file to specify input and output as well as schema matching options. The syntax of the web.instata configuration file is [Turtle](http://www.w3.org/TeamSubmission/turtle/).
+
+In order to publish a HTML+microdata document from a CSV file using a configuration file:
+
+	python web.instata.py -c {path to configuration file}
+
+Example:
+
+	python web.instata.py -c web.instata.config
+
+... where a configuration file looks as follows:
+
+	@prefix dc: <http://purl.org/dc/terms/> .
+	@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+	@prefix c: <#> .
+
+	c:default-config	
+		# publishing options
+		c:csv_input			"test/potd_0.csv" ;
+		c:output_base_uri	<http://example.org/instata/potd_0> ;
+		c:schema_matching	"dbpedia-2011-07-31.rdf" ; 
+	
+		# directory and file options
+		c:templates_dir		"templates/" ;
+		c:mappings_dir		"mappings/" ;
+		c:output_dir		"output/" ;
+		c:base_template		"base.tpl" ;
+		c:base_style_file	"web.instata-style.css" ;
+	
+		# metadata about the config file
+		dc:title		"The default configuration for web.instata" ;
+		dc:modified		"2011-08-01"^^xsd:date ;
+		dc:creator		<http://sw-app.org/mic.xhtml#i> ;
+	.
+	
+Note that in the configuration file you can specify one or more schema matchings (via `c:schema_matching`) as well as customise the output (`c:base_template` as well as `c:base_style_file`). The last block (metadata) is for completeness purposes and currently not used by web.instata - you may remove it if you want.
 
 ### Data dump
 
