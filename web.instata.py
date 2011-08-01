@@ -11,6 +11,10 @@ import sys
 sys.path.insert(0, os.getcwd() + '/lib/rdflib')
 sys.path.insert(0, os.getcwd() + '/lib/rdfextras')
 sys.path.insert(0, os.getcwd() + '/lib')
+try:
+    import json
+except ImportError:
+    import simplejson as json
 import getopt
 import StringIO
 import shutil
@@ -201,6 +205,31 @@ class InstantWebDataPublisher(object):
 			return self.g.serialize(format=format)
 		else:
 			return None
+			
+	def validate(self, doc_url, base_uri):
+		# make sure we have the column heads available:
+		self.parse(doc_url, base_uri)
+		# load Schema.org terms (datatypes, properties and types):
+		output_json = json.load(open('mappings/schema-org-all.json'))
+		detailed_results = {}
+		
+		columns = sorted(self.table_header, key=lambda cell: cell[0])
+		for col in columns:
+			test_column = str(col[1])
+			detailed_results[test_column] = False
+			for toplevel, subdict in output_json.iteritems():
+				if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG] scanning all %s ...' %(toplevel))
+				if test_column in subdict.keys():
+					if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG] %s is a valid Schema.org term.' %(test_column))
+					detailed_results[test_column] = True
+				else:
+					if InstantWebDataPublisher.DEBUG: print('[web.instata:DEBUG] %s is not a valid Schema.org term.' %(test_column))
+		
+		summary = True
+		for v in detailed_results.values():
+			if v == False: summary = False
+		return (summary, detailed_results)
+
 
 def usage():
 	print("Usage: python web.instata.py -p {path to CSV file} {base URI for publishing}")
@@ -210,7 +239,7 @@ if __name__ == "__main__":
 	iwdp = InstantWebDataPublisher()
 	
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hcpd", ["help", "config-publish", "publish", "dump"])
+		opts, args = getopt.getopt(sys.argv[1:], "hcpdv", ["help", "config-publish", "publish", "dump", "validate"])
 		for opt, arg in opts:
 			if opt in ("-h", "--help"):
 				usage()
@@ -231,6 +260,14 @@ if __name__ == "__main__":
 				print("processing [%s] with base URI [%s] " %(doc_url, base_uri))
 				iwdp.parse(doc_url, base_uri)
 				print(iwdp.dump_data())
+			elif opt in ("-v", "--validate"):
+				(doc_url, base_uri) = (args[0], args[1])
+				print("validating schema ...")
+				(summary, detailed_results) = iwdp.validate(doc_url, base_uri)
+				if summary: print("All column headings in the input file %s seem to be valid Schema.org terms :)" %doc_url)
+				else:
+					print("During the validation at least one column heading in input file %s seems not to be a valid Schema.org term :(" %doc_url)
+					print(detailed_results)
 	except getopt.GetoptError, err:
 		print str(err)
 		usage()
