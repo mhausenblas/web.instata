@@ -12,7 +12,7 @@ Turn your plain old tabular data (POTD) into Web data with web.instata: it takes
 	+-------+              |                    |            +--------------+
 	                       +--------------------+
 
-**Note**: web.instata only works for [CSV files](http://tools.ietf.org/html/rfc4180) that use [Schema.org types or properties](http://schema.org/docs/full.html) as column names.
+**Note**: web.instata only works for [CSV files](http://tools.ietf.org/html/rfc4180) that use [Schema.org types or properties](http://schema.org/docs/full.html) as column names. You can check if your CSV file is conforming with the validation option of the tool (see below for details).
 
 
 ## Usage
@@ -171,9 +171,9 @@ Thanks to [asciiflow.com](http://www.asciiflow.com) for providing a useful tool.
 
 * DONE: use [Bottle](http://bottlepy.org/docs/dev/) as templating system for output
 * DONE: use [DBpedia2Schema.org](http://mappings.dbpedia.org/server/ontology/export) mapping to enrich output (related link, etc.)
-* Use the [JS dump](http://schema.rdfs.org/all.json) from Schema.RDF.org to check if term exists
-* Provide new option `-c` to check input data
-* Provide new option `-d` to create data dump in RDF
+* DONE: use the [JS dump](http://schema.rdfs.org/all.json) from Schema.RDF.org to check if term exists
+* DONE: provide new option `-v` to validate column headings in CSV input
+* DONE: provide new option `-d` to create data dump in RDF
 
 ## License
 
