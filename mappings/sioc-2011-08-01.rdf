@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:schema="http://schema.org/"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:sioc="http://rdfs.org/sioc/ns/"
+	xmlns:sioct="http://rdfs.org/sioc/types/"
+	xmlns:dct="http://purl.org/dc/terms/">
+
+<rdf:Description rdf:about="http://schema.rdfs.org/all">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+	<dct:title xml:lang="en">Mappings between SIOC and schema.rdfs.org terms</dct:title>
+	<dct:description xml:lang="en">This is a set of mappings betweens the terms defined in the SIOC Ontology (http://sioc-project.org) and the ones defined at schema.rdfs.org.</dct:description>
+	<foaf:page rdf:resource="http://schema.rdfs.org/mappings/sioc"/>
+	<rdfs:seeAlso rdf:resource="http://sioc-project.org/"/>
+	<rdfs:seeAlso rdf:resource="http://schema.rdfs.org/"/>
+
+	<rdfs:seeAlso rdf:resource="http://schema.org/"/>
+	<rdfs:seeAlso rdf:resource="http://github.com/mhausenblas/schema-org-rdf"/>
+	<dct:hasFormat rdf:resource="http://schema.rdfs.org/mappings.sioc.ttl"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/BlogPosting">
+	<owl:sameAs rdf:resource="http://rdfs.org/sioc/types/BlogPost"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/Blog">
+	<owl:sameAs rdf:resource="http://rdfs.org/sioc/types/Blog"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/Article">
+	<rdfs:subClassOf rdf:resource="http://rdfs.org/sioc/ns/Item"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/WebPage">
+	<rdfs:subClassOf rdf:resource="http://rdfs.org/sioc/ns/Item"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/author">
+	<owl:sameAs rdf:resource="http://xmlns.com/foaf/0.1/maker"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/about">
+
+	<owl:sameAs rdf:resource="http://rdfs.org/sioc/ns/about"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/datePublished">
+	<owl:sameAs rdf:resource="http://purl.org/dc/terms/created"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/articleBody">
+	<owl:sameAs rdf:resource="http://rdfs.org/sioc/ns/content"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/articleSection">
+	<rdfs:subPropertyOf rdf:resource="http://rdfs.org/sioc/ns/topic"/>
+
+</rdf:Description>
+
+<rdf:Description rdf:about="http://schema.org/blogPosts">
+	<rdfs:subPropertyOf rdf:resource="http://rdfs.org/sioc/ns/container_of"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://rdfs.org/sioc/ns/num_replies">
+	<rdfs:subPropertyOf rdf:resource="http://schema.org/interactionCount"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="https://raw.github.com/mhausenblas/schema-org-rdf/master/mappings/sioc.ttl">
+	<date xmlns="http://vocab.sindice.net/">2011-08-01T09:42:47+01:00</date>
+	<size xmlns="http://vocab.sindice.net/" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">22</size>
+
+</rdf:Description>
+
+</rdf:RDF>
